@@ -1,0 +1,11 @@
+
+{
+  "libs": [ ],
+  "loadEagerly": [ ],
+  "plugins": {
+    "es_modules":{},
+    "node":{}
+  }
+}
+
+
