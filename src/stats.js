@@ -1,6 +1,6 @@
 'use strict';
 
-const sqrt = Math.sqrt;
+const { sqrt } = Math;
 const sqr = x => x * x;
 
 const sum = arr => arr.reduce((a, b) => a + b, 0);

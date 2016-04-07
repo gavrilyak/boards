@@ -1,7 +1,5 @@
 'use strict';
-const log = Math.log;
-const exp = Math.exp;
-const fabs = Math.abs;
+const { log, exp, abs, floor, round, PI } = Math;
 
 function lngamma(x, sgngam) {
   const logpi = 1.14472988584940017414;
@@ -21,8 +19,8 @@ function lngamma(x, sgngam) {
   if (x < -34.0) {
     q = -x;
     w = lngamma(q);
-    p = Math.floor(q);
-    i = Math.round(p);
+    p = floor(q);
+    i = round(p);
     if (i % 2 == 0) {
       sgngam = -1;
     } else {
@@ -35,7 +33,7 @@ function lngamma(x, sgngam) {
       z = p - q;
     }
 
-    z = q * Math.sin(Math.Pi * z);
+    z = q * sin(PI * z);
     result = logpi - log(z) - w;
     return result;
   }
@@ -203,7 +201,7 @@ function incompletegammac(a, x) {
     qk = qkm1 * z - qkm2 * yc;
     if (qk != 0) {
       r = pk / qk;
-      t = fabs((ans - r) / r);
+      t = abs((ans - r) / r);
       ans = r;
     } else {
       t = 1;
@@ -213,7 +211,7 @@ function incompletegammac(a, x) {
     pkm1 = pk;
     qkm2 = qkm1;
     qkm1 = qk;
-    if (fabs(pk) > igammabignumber) {
+    if (abs(pk) > igammabignumber) {
       pkm2 = pkm2 * igammabignumberinv;
       pkm1 = pkm1 * igammabignumberinv;
       qkm2 = qkm2 * igammabignumberinv;

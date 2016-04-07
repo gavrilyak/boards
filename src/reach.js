@@ -2,8 +2,7 @@
 
 const { incompletegamma } = require('./igamma');
 const { mean, stdDev, stdDevByMean } = require('./stats');
-const sqrt = Math.sqrt;
-const exp = Math.exp;
+const { sqrt, exp, min, PI } = Math;
 const sqr = x => x * x;
 
 const calcDistanceInMeters = (a, b, { metersPerLat, metersPerLon }) =>
@@ -17,7 +16,7 @@ a === b ? Infinity : calcDistanceInMeters(a, b, city);
 
 function calcRace(coords, metersPerDegrees) {
   const nearestNeighbors =
-    coords.map(p1 => Math.min(...coords.map(p2 => calcDistanceToOther(p1, p2, metersPerDegrees))));
+    coords.map(p1 => min(...coords.map(p2 => calcDistanceToOther(p1, p2, metersPerDegrees))));
   const avg = mean(nearestNeighbors);
   const std = stdDevByMean(nearestNeighbors, avg);
   return mean(nearestNeighbors.filter(dist => dist >= avg - std && dist <= avg + std));
@@ -62,7 +61,7 @@ function calcRegionGRP(boards) {
 function calcSquareAndFlatness(coords, { metersPerLat, metersPerLon }) {
   const width = metersPerLat * stdDev(coords.map(p => p.lat));
   const height = metersPerLon * stdDev(coords.map(p => p.lon));
-  const square = Math.PI * width * height;
+  const square = PI * width * height;
   const flatness = width < height ? width / height : height / width;
   return { square, flatness };
 }
