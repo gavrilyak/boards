@@ -5,43 +5,33 @@ const { mean, stdDev, stdDevByMean } = require('./stats');
 const sqrt = Math.sqrt;
 const exp = Math.exp;
 const sqr = x => x * x;
-/* eslint-disable no-console */
 
 const distance = (a, b, { LX, LY }) => sqrt(sqr((a.lat - b.lat) * LX) + sqr((a.lon - b.lon) * LY));
+const calcDistanceToOther = (a, b, city) => a === b ? Infinity : distance(a, b, city);
 function calcAverageDistance(coords, city) {
-  const distances =
-    coords.map(p1 => Math.min(...coords.map(p2 => p1 == p2 ? Infinity : distance(p1, p2, city))));
-  const avg = mean(distances);
-  const std = stdDevByMean(distances, avg);
-  const upperLimit = avg + std;
-  const lowerLimit = avg - std;
-  const distancesWithiLimits = distances.filter(dist => dist >= lowerLimit && dist <= upperLimit);
-  return mean(distancesWithiLimits);
+  const nearestNeighborths =
+    coords.map(p1 => Math.min(...coords.map(p2 => calcDistanceToOther(p1, p2, city))));
+  const avg = mean(nearestNeighborths);
+  const std = stdDevByMean(nearestNeighborths, avg);
+  return mean(nearestNeighborths.filter(dist => dist >= avg - std && dist <= avg + std));
 }
 
-function calculateReach(boards, city, options) {
-  const opts = options || {};
-  const { days = 30, frequency = 100 } = opts;
-  const regionGRP = boards.reduce((total, { grp, visibility }) => total + grp * visibility, 0);
-  const coords = boards.map(({ x, y }) => ({ lat: x, lon: y }));
-  const avgDistance = calcAverageDistance(coords, city);
-  const width = city.LX * stdDev(coords.map(p => p.lat));
-  const height = city.LY * stdDev(coords.map(p => p.lon));
-  const square = Math.PI * width * height / 1000000.0; // ???
-  const flatness = width < height ? width / height : height / width;
-  // console.log(regionGRP, avgDistance, square, flatness);
+function generateReachChart(
+  { grp, race, square, flatness },
+  { race: cityRace, square: citySquare },
+  options) {
+  const { days = 30, frequency = 100 } = options || {};
   const RACE_C = 0.07;
   const LAMBDA_C = 0.008;
   const DAY_C = 40.0;
   const ALPHA_C = 4.0;
-  const reachStart = (1 - exp(-RACE_C * sqrt(sqrt(city.race / avgDistance)))) * regionGRP;
-  const tmp = sqrt(regionGRP * (square / city.square)) / 100;
+  const reachStart = (1 - exp(-RACE_C * sqrt(sqrt(cityRace / race)))) * grp;
+  const tmp = sqrt(grp * (square / citySquare)) / 100;
   const reachEnd = reachStart + (100 - reachStart) * (1 - exp(-days * tmp));
-  // console.log(reachStart, reachEnd);
 
   const lambda = sqr(LAMBDA_C * reachEnd);
   const kDay = DAY_C / reachEnd;
-  const kK = ALPHA_C * flatness * (avgDistance / city.race);
+  const kK = ALPHA_C * flatness * (race / cityRace);
   const ampl = reachEnd;
 
   const reach = [];
@@ -56,7 +46,28 @@ function calculateReach(boards, city, options) {
   return reach;
 }
 
+function calcRegionGRP(boards) {
+  return boards.reduce((total, { grp, visibility }) => total + grp * visibility, 0);
+}
+
+function calcReach(boards, city, options) {
+  const grp = calcRegionGRP(boards);
+  const coords = boards.map(({ lat, lon }) => ({ lat, lon }));
+  const race = calcAverageDistance(coords, city);
+  const width = city.LX * stdDev(coords.map(p => p.lat));
+  const height = city.LY * stdDev(coords.map(p => p.lon));
+  const square = Math.PI * width * height / 1000000.0; // ???
+  const flatness = width < height ? width / height : height / width;
+  // console.log(grp, avgDistance, square, flatness);
+  return generateReachChart({
+    grp,
+    race,
+    square,
+    flatness,
+  }, city, options);
+}
+
 module.exports = {
-  calculateReach,
+  calcReach,
 };
 

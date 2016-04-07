@@ -1,4 +1,4 @@
-const { calculateReach } = require('./reach');
+const { calcReach } = require('./reach');
 const { cities } = require('./cities');
 
 const boards = [
@@ -23,8 +23,8 @@ const boards = [
   [30.426864, 50.458232,  5.378938, 0.840257],
   [30.432738, 50.458232,  5.378938, 0.797835],
   /* eslint-enable no-multi-spaces */
-].map(([x, y, grp, visibility]) => ({ x, y, grp, visibility }));
+].map(([lat, lon, grp, visibility]) => ({ lat, lon, grp, visibility }));
 
-const reach = calculateReach(boards, cities.Kiev);
+const reach = calcReach(boards, cities.Kiev);
 const formattedOut = reach.map(line => line.map(d => d.toFixed(6)).join('\t')).join('\n');
 process.stdout.write(`${formattedOut}\n`);
