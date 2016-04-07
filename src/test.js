@@ -1,4 +1,4 @@
-const { calcReach } = require('./reach');
+const calcReach = require('./index');
 const { cities } = require('./cities');
 
 const boards = [

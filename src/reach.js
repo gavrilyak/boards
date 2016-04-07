@@ -6,11 +6,18 @@ const sqrt = Math.sqrt;
 const exp = Math.exp;
 const sqr = x => x * x;
 
-const distance = (a, b, { LX, LY }) => sqrt(sqr((a.lat - b.lat) * LX) + sqr((a.lon - b.lon) * LY));
-const calcDistanceToOther = (a, b, city) => a === b ? Infinity : distance(a, b, city);
-function calcAverageDistance(coords, city) {
+const calcDistanceInMeters = (a, b, { metersPerLat, metersPerLon }) =>
+sqrt(
+  sqr((a.lat - b.lat) * metersPerLat) +
+  sqr((a.lon - b.lon) * metersPerLon)
+);
+
+const calcDistanceToOther = (a, b, city) =>
+a === b ? Infinity : calcDistanceInMeters(a, b, city);
+
+function calcRace(coords, metersPerDegrees) {
   const nearestNeighborths =
-    coords.map(p1 => Math.min(...coords.map(p2 => calcDistanceToOther(p1, p2, city))));
+    coords.map(p1 => Math.min(...coords.map(p2 => calcDistanceToOther(p1, p2, metersPerDegrees))));
   const avg = mean(nearestNeighborths);
   const std = stdDevByMean(nearestNeighborths, avg);
   return mean(nearestNeighborths.filter(dist => dist >= avg - std && dist <= avg + std));
@@ -19,7 +26,9 @@ function calcAverageDistance(coords, city) {
 function generateReachChart(
   { grp, race, square, flatness },
   { race: cityRace, square: citySquare },
-  options) {
+  options
+) {
+  // FIXME: next line should be in arguments, but v8 will support it in next version
   const { days = 30, frequency = 100 } = options || {};
   const RACE_C = 0.07;
   const LAMBDA_C = 0.008;
@@ -50,24 +59,19 @@ function calcRegionGRP(boards) {
   return boards.reduce((total, { grp, visibility }) => total + grp * visibility, 0);
 }
 
-function calcReach(boards, city, options) {
-  const grp = calcRegionGRP(boards);
-  const coords = boards.map(({ lat, lon }) => ({ lat, lon }));
-  const race = calcAverageDistance(coords, city);
-  const width = city.LX * stdDev(coords.map(p => p.lat));
-  const height = city.LY * stdDev(coords.map(p => p.lon));
-  const square = Math.PI * width * height / 1000000.0; // ???
+function calcSquareAndFlatness(coords, { metersPerLat, metersPerLon }) {
+  const width = metersPerLat * stdDev(coords.map(p => p.lat));
+  const height = metersPerLon * stdDev(coords.map(p => p.lon));
+  const square = Math.PI * width * height;
   const flatness = width < height ? width / height : height / width;
-  // console.log(grp, avgDistance, square, flatness);
-  return generateReachChart({
-    grp,
-    race,
-    square,
-    flatness,
-  }, city, options);
+  return { square, flatness };
 }
 
 module.exports = {
-  calcReach,
+  calcDistanceInMeters,
+  calcRegionGRP,
+  calcRace,
+  calcSquareAndFlatness,
+  generateReachChart,
 };
 
