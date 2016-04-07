@@ -16,11 +16,11 @@ const calcDistanceToOther = (a, b, city) =>
 a === b ? Infinity : calcDistanceInMeters(a, b, city);
 
 function calcRace(coords, metersPerDegrees) {
-  const nearestNeighborths =
+  const nearestNeighbors =
     coords.map(p1 => Math.min(...coords.map(p2 => calcDistanceToOther(p1, p2, metersPerDegrees))));
-  const avg = mean(nearestNeighborths);
-  const std = stdDevByMean(nearestNeighborths, avg);
-  return mean(nearestNeighborths.filter(dist => dist >= avg - std && dist <= avg + std));
+  const avg = mean(nearestNeighbors);
+  const std = stdDevByMean(nearestNeighbors, avg);
+  return mean(nearestNeighbors.filter(dist => dist >= avg - std && dist <= avg + std));
 }
 
 function generateReachChart(
