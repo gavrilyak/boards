@@ -1,5 +1,5 @@
 const calcReach = require('./index');
-const { cities } = require('./cities');
+const cities = require('./cities');
 
 const boards = [
   /* eslint-disable no-multi-spaces */
