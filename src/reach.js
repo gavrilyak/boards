@@ -35,8 +35,8 @@ function generateReachChart(
   const DAY_C = 40.0;
   const ALPHA_C = 4.0;
   const reachStart = (1 - exp(-RACE_C * sqrt(sqrt(cityRace / race)))) * grp;
-  const tmp = sqrt(grp * (square / citySquare)) / 100;
-  const reachEnd = reachStart + (100 - reachStart) * (1 - exp(-days * tmp));
+  const reachEnd = reachStart + (100 - reachStart) *
+    (1 - exp(-days * sqrt(grp * (square / citySquare)) / 100));
 
   const lambda = sqr(LAMBDA_C * reachEnd);
   const kDay = DAY_C / reachEnd;
