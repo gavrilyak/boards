@@ -142,6 +142,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var days = _ref4$days === undefined ? 30 : _ref4$days;
 	  var _ref4$frequency = _ref4.frequency;
 	  var frequency = _ref4$frequency === undefined ? 100 : _ref4$frequency;
+	  var _ref4$frequencyStep = _ref4.frequencyStep;
+	  var frequencyStep = _ref4$frequencyStep === undefined ? 1 : _ref4$frequencyStep;
 	
 	  var RACE_C = 0.07;
 	  var LAMBDA_C = 0.008;
@@ -159,9 +161,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  for (var j = 1; j <= days; j++) {
 	    var x = 1.0 + j * kDay;
 	    var row = reach[j - 1] = [];
-	    for (var i = 1; i <= frequency; i++) {
-	      var alpha = 1.0 + i * kK;
-	      row[i - 1] = ampl * incompletegamma(alpha, lambda * x);
+	    for (var freq = 1; freq <= frequency; freq += frequencyStep) {
+	      row.push(ampl * incompletegamma(1.0 + freq * kK, lambda * x));
 	    }
 	  }
 	  return reach;
@@ -185,7 +186,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var height = metersPerLon * stdDev(coords.map(function (p) {
 	    return p.lon;
 	  }));
-	  var square = PI * width * height;
+	  var square = PI * width * height; // ellipse square
 	  var flatness = width < height ? width / height : height / width;
 	  return { square: square, flatness: flatness };
 	}

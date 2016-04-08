@@ -28,14 +28,14 @@ function generateReachChart(
   options
 ) {
   // FIXME: next line should be in arguments, but v8 will support it in next version
-  const { days = 30, frequency = 100 } = options || {};
+  const { days = 30, frequency = 100, frequencyStep = 1 } = options || {};
   const RACE_C = 0.07;
   const LAMBDA_C = 0.008;
   const DAY_C = 40.0;
   const ALPHA_C = 4.0;
   const reachStart = (1 - exp(-RACE_C * sqrt(sqrt(cityRace / race)))) * grp;
-  const reachEnd = reachStart + (100 - reachStart) *
-    (1 - exp(-days * sqrt(grp * (square / citySquare)) / 100));
+  const reachEnd = reachStart +
+    (100 - reachStart) * (1 - exp(-days * sqrt(grp * (square / citySquare)) / 100));
 
   const lambda = sqr(LAMBDA_C * reachEnd);
   const kDay = DAY_C / reachEnd;
@@ -46,9 +46,8 @@ function generateReachChart(
   for (let j = 1; j <= days; j++) {
     const x = 1.0 + j * kDay;
     const row = reach[j - 1] = [];
-    for (let i = 1; i <= frequency; i++) {
-      const alpha = 1.0 + i * kK;
-      row[i - 1] = ampl * incompletegamma(alpha, lambda * x);
+    for (let freq = 1; freq <= frequency; freq += frequencyStep) {
+      row.push(ampl * incompletegamma(1.0 + freq * kK, lambda * x));
     }
   }
   return reach;
@@ -61,7 +60,7 @@ function calcRegionGRP(boards) {
 function calcSquareAndFlatness(coords, { metersPerLat, metersPerLon }) {
   const width = metersPerLat * stdDev(coords.map(p => p.lat));
   const height = metersPerLon * stdDev(coords.map(p => p.lon));
-  const square = PI * width * height;
+  const square = PI * width * height; // ellipse square
   const flatness = width < height ? width / height : height / width;
   return { square, flatness };
 }
