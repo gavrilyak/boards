@@ -1,8 +1,8 @@
 module.exports = {
   entry: './src/index',
   output: {
-    libraryTarget: 'commonjs2',
-    library: 'reach',
+    libraryTarget: 'umd',
+    library: 'calcReach',
     filename: 'build/index.js',
   },
   devtool: 'source-map',
