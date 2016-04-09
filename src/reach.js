@@ -50,6 +50,7 @@ function generateReachChart(
       row.push(ampl * incompletegamma(1.0 + freq * kK, lambda * x));
     }
   }
+
   return reach;
 }
 

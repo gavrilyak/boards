@@ -12,5 +12,6 @@ function calcReach(boards, city, options) {
   const { square, flatness } = calcSquareAndFlatness(boards, city);
   return generateReachChart({ grp, race, square, flatness }, city, options);
 }
+
 module.exports = calcReach;
 
