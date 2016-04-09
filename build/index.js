@@ -75,6 +75,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  return generateReachChart({ grp: grp, race: race, square: square, flatness: flatness }, city, options);
 	}
+	
 	module.exports = calcReach;
 
 /***/ },
@@ -165,6 +166,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      row.push(ampl * incompletegamma(1.0 + freq * kK, lambda * x));
 	    }
 	  }
+	
 	  return reach;
 	}
 	
@@ -474,6 +476,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    v1 += sqr(arr[i] - m);
 	    v2 += arr[i] - m;
 	  }
+	
 	  v2 = sqr(v2) / n;
 	  var res = (v1 - v2) / (n - 1);
 	  return res < 0 ? 0 : res;
