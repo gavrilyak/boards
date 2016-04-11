@@ -17,6 +17,7 @@ function varianceByMean(arr, m) {
     v1 += sqr(arr[i] - m);
     v2 += arr[i] - m;
   }
+
   v2 = sqr(v2) / n;
   const res = (v1 - v2) / (n - 1);
   return res < 0 ? 0 : res;
