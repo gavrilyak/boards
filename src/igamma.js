@@ -1,7 +1,7 @@
 'use strict';
-const { log, exp, abs, floor, round, PI } = Math;
+const { log, exp, abs, floor, PI, sin } = Math;
 
-function lngamma(x, sgngam) {
+function lngamma(x) {
   const logpi = 1.14472988584940017414;
   const ls2pi = 0.91893853320467274178;
   let result;
@@ -11,21 +11,12 @@ function lngamma(x, sgngam) {
   let p;
   let q;
   let u;
-  let w;
   let z;
-  let i;
 
-  sgngam = 1;
   if (x < -34.0) {
     q = -x;
-    w = lngamma(q);
+    const w = lngamma(q);
     p = floor(q);
-    i = round(p);
-    if (i % 2 == 0) {
-      sgngam = -1;
-    } else {
-      sgngam = 1;
-    }
 
     z = q - p;
     if (z > 0.5) {
@@ -54,20 +45,13 @@ function lngamma(x, sgngam) {
       u = x + p;
     }
 
-    if (z < 0) {
-      sgngam = -1;
-      z = -z;
-    } else {
-      sgngam = 1;
-    }
-
     if (u == 2) {
       result = log(z);
       return result;
     }
 
     p = p - 2;
-    x = x + p;
+    x = x + p; // eslint-disable-line no-param-reassign
     b = -1378.25152569120859100;
     b = -38801.6315134637840924 + x * b;
     b = -331612.992738871184744 + x * b;
@@ -123,7 +107,7 @@ function incompletegamma(a, x) {
   }
 
   if (x > 1 && x > a) {
-    result = 1 - incompletegammac(a, x); // eslint-disable no-use-befor-define
+    result = 1 - incompletegammac(a, x); // eslint-disable-line no-use-before-define
     return result;
   }
 
@@ -155,15 +139,11 @@ function incompletegammac(a, x) {
   let ans;
   let ax;
   let c;
-  let yc;
-  let r;
   let t;
   let y;
   let z;
-  let pk;
   let pkm1;
   let pkm2;
-  let qk;
   let qkm1;
   let qkm2;
 
@@ -196,11 +176,11 @@ function incompletegammac(a, x) {
     c = c + 1;
     y = y + 1;
     z = z + 2;
-    yc = y * c;
-    pk = pkm1 * z - pkm2 * yc;
-    qk = qkm1 * z - qkm2 * yc;
+    const yc = y * c;
+    const pk = pkm1 * z - pkm2 * yc;
+    const qk = qkm1 * z - qkm2 * yc;
     if (qk != 0) {
-      r = pk / qk;
+      const r = pk / qk;
       t = abs((ans - r) / r);
       ans = r;
     } else {
